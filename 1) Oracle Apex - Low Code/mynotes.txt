@@ -1,0 +1,242 @@
+===============================================================================================
+
+End-point:
+
+http://api.themoviedb.org/3/movie/popular
+	api_key: <YOUR_API_KEY>
+	region: us
+
+===============================================================================================
+
+Classic Report
+	Blank with attribute
+	Template: Card
+		Style: Featured
+		Layout: 5 columns
+	Pagination: Hide when...
+	CSS Classes: "featured-posters"
+
+Local Post Processing:
+select VOTE_COUNT,
+		ID,
+		VIDEO,
+		VOTE_AVERAGE CARD_SUBTITLE,
+		TITLE CARD_TITLE,
+		POPULARITY,
+		'https://image.tmdb.org/t/p/w500'||POSTER_PATH POSTER,
+		null CARD_TEXT,
+		ORIGINAL_LANGUAGE,
+		ORIGINAL_TITLE,
+		BACKDROP_PATH,
+		ADULT,
+		OVERVIEW,
+		RELEASE_DATE,
+		'is-featured' CARD_MODIFIERS,
+		' ' CARD_SUBTEXT
+	from #APEX$SOURCE_DATA#
+
+Column "Card_Text":
+<img src="#POSTER#" alt="#CARD_TITLE#" class="poster-image" />
+
+===============================================================================================
+ 
+/* Make sure poster image is responsive based on container */
+.poster-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+ 
+/* Remove padding and set position before title */
+.featured-posters .t-Card-body {
+  padding: 0;
+  order: 1;
+}
+ 
+/* Hide extra data from card template */
+.featured-posters .t-Card-info {
+  display: none;
+}
+ 
+/* Move title to after poster image */
+.featured-posters .t-Card-titleWrap {
+  order: 2;
+  background-color: rgba(0, 0, 0, 1);
+  color: #fff;
+  padding: 12px;
+  position: relative;
+}
+ 
+.featured-posters .t-Card-titleWrap:before {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%);
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  height: 100%;
+}
+ 
+/* Prevent wrapping of the movie title */
+.featured-posters .t-Card-title {
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+ 
+@media (max-width:640px) {
+ 
+  /* Override to force 2 columns on mobile */
+  .t-Cards--3cols .t-Cards-item, .t-Cards--4cols .t-Cards-item, .t-Cards--5cols .t-Cards-item {
+    width: 50%;
+  }
+ 
+  /* Reduced Padding */
+  .featured-posters .t-Card-titleWrap {
+    padding: 12px;
+  }
+ 
+  /* Smaller Title Text */
+  .featured-posters .t-Card-titleWrap h3 {
+    font-size: 14px;
+  }
+}
+ 
+.movies-list {
+}
+ 
+/* Show pointer cursor on hover to appear as link */
+.movies-list .t-Report-cell {
+  cursor: pointer;
+}
+ 
+.movies-list [headers=MOVIE_ORDER] {
+  width: 1%;
+  text-align: center;
+  font-size: 16px;
+}
+.movies-list [headers=POSTER] {
+  width: 1%;
+  padding: 4px 0;
+}
+.movies-list [headers=POSTER]:first-child {
+  padding-left: 4px;
+}
+.movies-list .poster-image {
+  max-width: 92px;
+}
+ 
+/* Mobile Specific Tweaks for screen sizes less than 640px */
+@media (max-width:640px) {
+  .movies-list .poster-image {
+    max-width: 64px;
+  }
+}
+.movies-list .movie-title {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.4;
+  margin-bottom: 2px;
+  display: inline-block;
+}
+.movies-list .release-date {
+  opacity: .5;
+  font-size: 12px;
+}
+.movies-list [headers=VOTE_AVERAGE] {
+  text-align: center;
+  width: 1%;
+  font-size: 12px;
+}
+.movies-list [headers=VOTE_AVERAGE] .fa {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+ 
+/* Style the backdrop image div */
+.backdrop {
+  background-size: 100% auto;
+  background-position: center top;
+  background-repeat: no-repeat;
+  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, .075);
+  border-radius: 2px;
+  margin-bottom: 16px;
+  max-height: 50vh;
+}
+ 
+/* The top padding ensures a minimum of 16x9 ratio */
+.backdrop:before {
+  content: '';
+  display: block;
+  padding-top: 56.25%;
+}
+ 
+/* Stretch tabs evenly */
+.t-Tabs {
+  display: flex;
+}
+.t-Tabs-item {
+  display: block;
+  width: 25%;
+  flex-basis: 25%;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+.t-Tabs-link {
+  display: block;
+  text-align: center;
+}
+ 
+/* styling for cards containing cast members */
+.cast-members {
+}
+.cast-members .t-Card-icon {
+  border-radius: 0;
+  height: auto;
+  width: auto;
+  max-width: 64px;
+}
+.cast-members .t-Card-icon:before,
+.cast-members.t-Cards--animColorFill .t-Card .t-Card-icon:before {
+  content: none;
+}
+.cast-members .t-Card-initials img {
+  border-radius: 2px;
+  display: block;
+}
+ 
+/* Override comment text backgrounds */
+.t-Comments--chat .t-Comments-comment {
+  background-color: #f0f0f0;
+}
+.t-Comments--chat .t-Comments-comment:after {
+  border-right-color: #f0f0f0;
+}
+ 
+/* Responsive container for movie trailers */
+.video {
+  overflow: hidden;
+  position: relative;
+  max-width: 100%;
+  width: 100%;
+}
+.video:before {
+  content: '';
+  display: block;
+  padding-bottom: 56.25%;
+  pointer-events: none;
+}
+.video iframe {
+  margin: 0;
+  z-index: 1;
+  display: block;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
